@@ -22,6 +22,6 @@ class OnEmptyQueueException implements EmptyQueueBehaviorInterface
      */
     public function resolve($queue)
     {
-        throw new Exception('Queue '.$queue->getName().' is empty');
+        throw new Exception('Queue ' . $queue->getName() . ' is empty');
     }
 }

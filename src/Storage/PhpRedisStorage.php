@@ -77,7 +77,7 @@ class PhpRedisStorage implements StorageInterface
     public function zSetExists($key, $identity): bool
     {
         $score = $this->redis->zScore($key, $identity);
-        return (!is_null($score) && $score!==false);
+        return (!is_null($score) && $score !== false);
     }
     
     public function moveFromZSetToList($listKey, $zSetKey, $item)
