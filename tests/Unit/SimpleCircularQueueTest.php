@@ -47,13 +47,7 @@ class SimpleCircularQueueTest extends TestCase
         $this->redis->shouldReceive('listPush')->once()->withArgs(['test:Queue', [10, 20, 30]]);
         $this->queue->fill([10, 20, 30]);
     }
-    
-    public function testPush()
-    {
-        $this->redis->shouldReceive('listPush')->withArgs(['test:Queue', [20]]);
-        $this->queue->push(20);
-    }
-    
+ 
     public function testPurgeQueued()
     {
         $this->redis->shouldReceive('delete')->once()->withArgs(['test:Queue']);

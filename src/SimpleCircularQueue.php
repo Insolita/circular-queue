@@ -76,11 +76,6 @@ class SimpleCircularQueue implements QueueInterface
         }
     }
     
-    public function push($item)
-    {
-        $this->redis->listPush($this->queueKey(), [$this->converter->toIdentity($item)]);
-    }
-    
     public function next()
     {
         $item = $this->redis->listPop($this->queueKey());

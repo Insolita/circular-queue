@@ -23,13 +23,6 @@ interface QueueInterface
      */
     public function fill(array $data);
     
-    /**
-     * Push one item to queue
-     * @param $payload
-     *
-     * @return mixed
-     */
-    public function push($payload);
     
     /**
      * RPOPLPUSH behavior, pull item from top, push it to bottom end return
