@@ -6,8 +6,6 @@
 namespace insolita\cqueue\tests\Functional;
 
 use Carbon\Carbon;
-use Codeception\Specify;
-use function getenv;
 use insolita\cqueue\Behaviors\OnEmptyQueueException;
 use insolita\cqueue\CircularQueue;
 use insolita\cqueue\Converters\AsIsConverter;
@@ -17,8 +15,6 @@ use Redis;
 
 class FunctionalRedisTest extends TestCase
 {
-    use Specify;
-    
     /**
      * @var CircularQueue
      */
@@ -105,19 +101,21 @@ class FunctionalRedisTest extends TestCase
         expect($this->queue->listQueued())->notContains($two);
         expect($this->queue->listDelayed())->contains($two);
     }
+    
     public function testResumeNewItem()
     {
         $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);
         expect($this->queue->listQueued())->equals(['two', 'one', 'baz', 'bar', 'foo']);
-        $newItem  = 'qqq';
+        $newItem = 'qqq';
         $this->queue->resume($newItem);
         expect('item was resumed in queue', $this->queue->listQueued())->contains($newItem);
         expect('item not in delayed', $this->queue->listDelayed())->notContains($newItem);
-        $newItem  = 'qqq2';
+        $newItem = 'qqq2';
         $this->queue->resume($newItem, 30);
         expect('item not resumed in queue', $this->queue->listQueued())->notContains($newItem);
         expect('item in delayed', $this->queue->listDelayed())->contains($newItem);
     }
+    
     public function testResumeForItemPulledWithDelay()
     {
         $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);

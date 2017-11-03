@@ -83,7 +83,7 @@ class FunctionalPredisTest extends TestCase
         expect('pull without ttl not mark item as delayed', $this->queue->countDelayed())->equals(0);
         expect('pull decrease queue', $this->queue->countQueued())->equals(4);
         expect($this->queue->countTotal())->equals(4);
-    
+        
         $two = $this->queue->pull(5);
         expect($two)->equals('bar');
         expect('pull with ttl store item in delayed zSet', $this->queue->countDelayed())->equals(1);
@@ -116,23 +116,25 @@ class FunctionalPredisTest extends TestCase
         expect($this->queue->listQueued())->notContains($one);
         expect($this->queue->listDelayed())->contains($one);
         $this->queue->resume($one);
-    
+        
         expect('item was resumed in queue', $this->queue->listQueued())->contains($one);
         expect('item not in delayed', $this->queue->listDelayed())->notContains($one);
     }
+    
     public function testResumeNewItem()
     {
         $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);
         expect($this->queue->listQueued())->equals(['two', 'one', 'baz', 'bar', 'foo']);
-        $newItem  = 'qqq';
+        $newItem = 'qqq';
         $this->queue->resume($newItem);
         expect('item was resumed in queue', $this->queue->listQueued())->contains($newItem);
         expect('item not in delayed', $this->queue->listDelayed())->notContains($newItem);
-        $newItem  = 'qqq2';
+        $newItem = 'qqq2';
         $this->queue->resume($newItem, 30);
         expect('item not resumed in queue', $this->queue->listQueued())->notContains($newItem);
         expect('item in delayed', $this->queue->listDelayed())->contains($newItem);
     }
+    
     public function testResumeForItemPulledWithoutDelay()
     {
         $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);

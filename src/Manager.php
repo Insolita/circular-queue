@@ -31,7 +31,7 @@ class Manager
     /**
      * @param QueueInterface|CircularQueue $queue
      */
-    public function add($queue)
+    public function add(QueueInterface $queue)
     {
         $this->queues[$queue->getName()] = $queue;
     }

@@ -2,6 +2,11 @@ Circular Queue
 ==============
 Circular Queue with redis implementation for distribution of shared data
 Useful for resource balancing, parsing
+[![Build Status](https://travis-ci.org/Insolita/circular-queue.svg?branch=master)](https://travis-ci.org/Insolita/circular-queue)
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Insolita/circular-queue/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Insolita/circular-queue/?branch=master)
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/53f28cc0-f72a-4c41-adf0-1e776bc2f694/big.png)](https://insight.sensiolabs.com/projects/53f28cc0-f72a-4c41-adf0-1e776bc2f694)
 
 ###Install
 `composer require insolita/circular-queue`
