@@ -16,6 +16,7 @@ use function serialize;
 class SerializableConverterTest extends TestCase
 {
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+    
     /**
      * @var \insolita\cqueue\CircularQueue $queue
      **/
@@ -75,6 +76,40 @@ class SerializableConverterTest extends TestCase
         expect($item)->equals(['id' => 10, 'name' => 'foo']);
     }
     
+    public function testListQueued()
+    {
+        $this->redis->shouldReceive('listItems')->twice()->andReturn([
+            serialize(['id' => 10, 'name' => 'foo']),
+            serialize(['id' => 20, 'name' => 'bar']),
+        ]);
+        $notConverted = $this->queue->listQueued();
+        expect($notConverted)->equals([
+            serialize(['id' => 10, 'name' => 'foo']),
+            serialize(['id' => 20, 'name' => 'bar']),
+        ]);
+        $converted = $this->queue->listQueued(true);
+        expect($converted)->equals([
+            ['id' => 10, 'name' => 'foo'],
+            ['id' => 20, 'name' => 'bar'],
+        ]);
+    }
+    public function testListDelayed()
+    {
+        $this->redis->shouldReceive('zSetItems')->twice()->andReturn([
+            serialize(['id' => 10, 'name' => 'foo']),
+            serialize(['id' => 20, 'name' => 'bar']),
+        ]);
+        $notConverted = $this->queue->listDelayed();
+        expect($notConverted)->equals([
+            serialize(['id' => 10, 'name' => 'foo']),
+            serialize(['id' => 20, 'name' => 'bar']),
+        ]);
+        $converted = $this->queue->listDelayed(true);
+        expect($converted)->equals([
+            ['id' => 10, 'name' => 'foo'],
+            ['id' => 20, 'name' => 'bar'],
+        ]);
+    }
     public function testResumeWithoutDelayForWaited()
     {
         $serialized = serialize(['id' => 3, 'name' => 'baz']);

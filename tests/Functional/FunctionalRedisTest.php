@@ -3,7 +3,7 @@
  * Created by solly [02.11.17 20:15]
  */
 
-namespace insolita\cqueue\tests\Unit;
+namespace insolita\cqueue\tests\Functional;
 
 use Carbon\Carbon;
 use Codeception\Specify;
@@ -15,7 +15,7 @@ use insolita\cqueue\Storage\PhpRedisStorage;
 use PHPUnit\Framework\TestCase;
 use Redis;
 
-class IntegrationRedisTest extends TestCase
+class FunctionalRedisTest extends TestCase
 {
     use Specify;
     
@@ -105,7 +105,19 @@ class IntegrationRedisTest extends TestCase
         expect($this->queue->listQueued())->notContains($two);
         expect($this->queue->listDelayed())->contains($two);
     }
-    
+    public function testResumeNewItem()
+    {
+        $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);
+        expect($this->queue->listQueued())->equals(['two', 'one', 'baz', 'bar', 'foo']);
+        $newItem  = 'qqq';
+        $this->queue->resume($newItem);
+        expect('item was resumed in queue', $this->queue->listQueued())->contains($newItem);
+        expect('item not in delayed', $this->queue->listDelayed())->notContains($newItem);
+        $newItem  = 'qqq2';
+        $this->queue->resume($newItem, 30);
+        expect('item not resumed in queue', $this->queue->listQueued())->notContains($newItem);
+        expect('item in delayed', $this->queue->listDelayed())->contains($newItem);
+    }
     public function testResumeForItemPulledWithDelay()
     {
         $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);

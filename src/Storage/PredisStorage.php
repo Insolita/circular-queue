@@ -6,16 +6,16 @@
 namespace insolita\cqueue\Storage;
 
 use insolita\cqueue\Contracts\StorageInterface;
-use Predis\Client;
+use Predis\ClientInterface;
 
 class PredisStorage implements StorageInterface
 {
     /**
-     * @var \Predis\Client
+     * @var \Predis\ClientInterface
      */
     private $redis;
     
-    public function __construct(Client $client)
+    public function __construct(ClientInterface $client)
     {
         $this->redis = $client;
     }
@@ -75,7 +75,7 @@ class PredisStorage implements StorageInterface
     public function zSetExists($key, $identity): bool
     {
         $score = $this->redis->zScore($key, $identity);
-        return !is_null($score);
+        return (!is_null($score) && $score !== false);
     }
     
     public function moveFromZSetToList($listKey, $zSetKey, $item)

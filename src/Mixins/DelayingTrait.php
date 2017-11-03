@@ -13,17 +13,17 @@ use Carbon\Carbon;
 trait DelayingTrait
 {
     
-    public function resume($payload, int $at = 0)
+    public function resume($payload, int $delay = 0)
     {
         $identity = $this->converter->toIdentity($payload);
-        if ($at === 0) {
+        if ($delay === 0) {
             if ($this->redis->zSetExists($this->delayedKey(), $identity)) {
                 $this->redis->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
             } else {
                 $this->redis->listPush($this->queueKey(), [$identity]);
             }
         } else {
-            $timestamp = Carbon::now()->timestamp + $at;
+            $timestamp = Carbon::now()->timestamp + $delay;
             $this->redis->zSetPush($this->delayedKey(), $timestamp, $identity);
         }
     }
@@ -37,9 +37,14 @@ trait DelayingTrait
         return $this->redis->zSetCount($this->delayedKey());
     }
     
-    public function listDelayed(): array
+    public function listDelayed($converted = false): array
     {
-        return $this->redis->zSetItems($this->delayedKey());
+        $list = $this->redis->zSetItems($this->delayedKey());
+        if ($converted === false || empty($list)) {
+            return $list;
+        } else {
+            return array_map([$this->converter, 'toPayload'], $list);
+        }
     }
     
     public function resumeAllDelayed()

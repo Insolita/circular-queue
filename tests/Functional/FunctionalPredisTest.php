@@ -3,7 +3,7 @@
  * Created by solly [02.11.17 20:15]
  */
 
-namespace insolita\cqueue\tests\Unit;
+namespace insolita\cqueue\tests\Functional;
 
 use Carbon\Carbon;
 use insolita\cqueue\Behaviors\OnEmptyQueueException;
@@ -13,7 +13,7 @@ use insolita\cqueue\Storage\PredisStorage;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 
-class IntegrationPRedisTest extends TestCase
+class FunctionalPredisTest extends TestCase
 {
     /**
      * @var CircularQueue
@@ -120,7 +120,19 @@ class IntegrationPRedisTest extends TestCase
         expect('item was resumed in queue', $this->queue->listQueued())->contains($one);
         expect('item not in delayed', $this->queue->listDelayed())->notContains($one);
     }
-    
+    public function testResumeNewItem()
+    {
+        $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);
+        expect($this->queue->listQueued())->equals(['two', 'one', 'baz', 'bar', 'foo']);
+        $newItem  = 'qqq';
+        $this->queue->resume($newItem);
+        expect('item was resumed in queue', $this->queue->listQueued())->contains($newItem);
+        expect('item not in delayed', $this->queue->listDelayed())->notContains($newItem);
+        $newItem  = 'qqq2';
+        $this->queue->resume($newItem, 30);
+        expect('item not resumed in queue', $this->queue->listQueued())->notContains($newItem);
+        expect('item in delayed', $this->queue->listDelayed())->contains($newItem);
+    }
     public function testResumeForItemPulledWithoutDelay()
     {
         $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);
@@ -185,5 +197,4 @@ class IntegrationPRedisTest extends TestCase
         expect($this->queue->countDelayed())->equals(0);
         expect($this->queue->listQueued())->equals([$two, $one, $three, 'two', 'one']);
     }
-   
 }

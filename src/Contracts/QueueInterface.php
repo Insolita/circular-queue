@@ -39,5 +39,12 @@ interface QueueInterface
     
     public function purgeQueued();
     public function countQueued():int;
-    public function listQueued():array;
+    /**
+     * List all queued items
+     *
+     * @param bool $converted //If true, each item will be converted to payload with PayloadConverter
+     *
+     * @return array
+     */
+    public function listQueued($converted = false):array;
 }

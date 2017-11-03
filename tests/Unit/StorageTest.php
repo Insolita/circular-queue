@@ -129,10 +129,30 @@ class StorageTest extends TestCase
     
     public function testZSetExists()
     {
-        $this->predis->shouldReceive('zScore')->withArgs(['key', 'foo']);
-        $this->predisStorage->zSetExists('key', 'foo');
-        $this->phpRedis->shouldReceive('zScore')->withArgs(['key', 'foo']);
-        $this->phpRedisStorage->zSetExists('key', 'foo');
+        $this->predis->shouldReceive('zScore')->withArgs(['key', 'foo'])->andReturn(1);
+        $result = $this->predisStorage->zSetExists('key', 'foo');
+        expect($result)->true();
+        $this->predis->shouldReceive('zScore')->withArgs(['key', 'qqq'])->andReturn(0);
+        $result = $this->predisStorage->zSetExists('key', 'qqq');
+        expect($result)->true();
+        $this->predis->shouldReceive('zScore')->withArgs(['key', 'bar'])->andReturn(false);
+        $result = $this->predisStorage->zSetExists('key', 'bar');
+        expect($result)->false();
+        $this->predis->shouldReceive('zScore')->withArgs(['key', 'baz'])->andReturn(null);
+        $result = $this->predisStorage->zSetExists('key', 'baz');
+        expect($result)->false();
+        $this->phpRedis->shouldReceive('zScore')->withArgs(['key', 'foo'])->andReturn(1);
+        $result = $this->phpRedisStorage->zSetExists('key', 'foo');
+        expect($result)->true();
+        $this->phpRedis->shouldReceive('zScore')->withArgs(['key', 'qqq'])->andReturn(0);
+        $result = $this->phpRedisStorage->zSetExists('key', 'qqq');
+        expect($result)->true();
+        $this->phpRedis->shouldReceive('zScore')->withArgs(['key', 'bar'])->andReturn(false);
+        $result = $this->phpRedisStorage->zSetExists('key', 'bar');
+        expect($result)->false();
+        $this->phpRedis->shouldReceive('zScore')->withArgs(['key', 'baz'])->andReturn(null);
+        $result = $this->phpRedisStorage->zSetExists('key', 'baz');
+        expect($result)->false();
     }
     
     public function testMoveFromZSetToListExisted()

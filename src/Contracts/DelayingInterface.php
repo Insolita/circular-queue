@@ -46,9 +46,12 @@ interface DelayingInterface
     
     /**
      * List all delayed items
+     *
+     * @param bool $converted //If true, each item will be converted to payload with PayloadConverter
+     *
      * @return array
-     **/
-    public function listDelayed():array;
+     */
+    public function listDelayed($converted = false):array;
     
     /**
      * Return all delayed items to queue

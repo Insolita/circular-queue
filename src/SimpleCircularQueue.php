@@ -5,6 +5,7 @@
 
 namespace insolita\cqueue;
 
+use function array_map;
 use insolita\cqueue\Contracts\EmptyQueueBehaviorInterface;
 use insolita\cqueue\Contracts\PayloadConverterInterface;
 use insolita\cqueue\Contracts\QueueInterface;
@@ -54,19 +55,25 @@ class SimpleCircularQueue implements QueueInterface
         $identities = array_map([$this->converter, 'toIdentity'], $data);
         $this->redis->listPush($this->queueKey(), $identities);
     }
+    
     public function purgeQueued()
     {
         $this->redis->delete($this->queueKey());
     }
     
-    public function countQueued():int
+    public function countQueued(): int
     {
         return $this->redis->listCount($this->queueKey());
     }
     
-    public function listQueued(): array
+    public function listQueued($converted = false): array
     {
-        return $this->redis->listItems($this->queueKey());
+        $list = $this->redis->listItems($this->queueKey());
+        if ($converted === false || empty($list)) {
+            return $list;
+        } else {
+            return array_map([$this->converter, 'toPayload'], $list);
+        }
     }
     
     public function push($item)
@@ -84,7 +91,7 @@ class SimpleCircularQueue implements QueueInterface
             return $this->converter->toPayload($item);
         }
     }
-
+    
     protected function queueKey(): string
     {
         return $this->getName() . ':Queue';

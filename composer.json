@@ -10,20 +10,22 @@
         }
     ] ,
     "require":     {
-        "php": ">=7.0"
+        "php":           ">=7.0" ,
+        "nesbot/carbon": "1.22.*"
     } ,
     "require-dev": {
-        "phpunit/phpunit":     "~6.0" ,
-        "codeception/verify":  "~0.4" ,
-        "mockery/mockery": "1.*"
+        "phpunit/phpunit":    "~6.0" ,
+        "codeception/verify": "~0.4" ,
+        "mockery/mockery":    "1.*" ,
+        "predis/predis":      "1.1.*"
     } ,
     "suggest":     {
         "predis/predis": "1.1.*"
     } ,
     "autoload":    {
         "psr-4": {
-            "insolita\\cqueue\\": "src/" ,
-            "tests\\":  "tests/"
+            "insolita\\cqueue\\tests\\": "tests/" ,
+            "insolita\\cqueue\\":        "src/"
         }
     }
 }
