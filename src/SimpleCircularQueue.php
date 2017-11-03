@@ -31,7 +31,7 @@ class SimpleCircularQueue implements QueueInterface
     /**
      * @var \insolita\cqueue\Contracts\StorageInterface
      */
-    protected $redis;
+    protected $storage;
     
     public function __construct(
         string $name,
@@ -42,7 +42,7 @@ class SimpleCircularQueue implements QueueInterface
         $this->name = $name;
         $this->converter = $converter;
         $this->emptyQueueBehavior = $emptyQueueBehavior;
-        $this->redis = $redis;
+        $this->storage = $redis;
     }
     
     public function getName(): string
@@ -53,22 +53,22 @@ class SimpleCircularQueue implements QueueInterface
     public function fill(array $data)
     {
         $identities = array_map([$this->converter, 'toIdentity'], $data);
-        $this->redis->listPush($this->queueKey(), $identities);
+        $this->storage->listPush($this->queueKey(), $identities);
     }
     
     public function purgeQueued()
     {
-        $this->redis->delete($this->queueKey());
+        $this->storage->delete($this->queueKey());
     }
     
     public function countQueued(): int
     {
-        return $this->redis->listCount($this->queueKey());
+        return $this->storage->listCount($this->queueKey());
     }
     
     public function listQueued($converted = false): array
     {
-        $list = $this->redis->listItems($this->queueKey());
+        $list = $this->storage->listItems($this->queueKey());
         if ($converted === false || empty($list)) {
             return $list;
         } else {
@@ -78,11 +78,11 @@ class SimpleCircularQueue implements QueueInterface
     
     public function next()
     {
-        $item = $this->redis->listPop($this->queueKey());
+        $item = $this->storage->listPop($this->queueKey());
         if (!$item) {
             return $this->emptyQueueBehavior->resolve($this);
         } else {
-            $this->redis->listPush($this->queueKey(), [$item]);
+            $this->storage->listPush($this->queueKey(), [$item]);
             return $this->converter->toPayload($item);
         }
     }

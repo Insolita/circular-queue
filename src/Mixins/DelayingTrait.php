@@ -17,29 +17,29 @@ trait DelayingTrait
     {
         $identity = $this->converter->toIdentity($payload);
         if ($delay === 0) {
-            if ($this->redis->zSetExists($this->delayedKey(), $identity)) {
-                $this->redis->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
+            if ($this->storage->zSetExists($this->delayedKey(), $identity)) {
+                $this->storage->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
             } else {
-                $this->redis->listPush($this->queueKey(), [$identity]);
+                $this->storage->listPush($this->queueKey(), [$identity]);
             }
         } else {
             $timestamp = Carbon::now()->timestamp + $delay;
-            $this->redis->zSetPush($this->delayedKey(), $timestamp, $identity);
+            $this->storage->zSetPush($this->delayedKey(), $timestamp, $identity);
         }
     }
     public function resumeAt($payload, int $timestamp)
     {
         $identity = $this->converter->toIdentity($payload);
-        $this->redis->zSetPush($this->delayedKey(), $timestamp, $identity);
+        $this->storage->zSetPush($this->delayedKey(), $timestamp, $identity);
     }
     public function countDelayed(): int
     {
-        return $this->redis->zSetCount($this->delayedKey());
+        return $this->storage->zSetCount($this->delayedKey());
     }
     
     public function listDelayed($converted = false): array
     {
-        $list = $this->redis->zSetItems($this->delayedKey());
+        $list = $this->storage->zSetItems($this->delayedKey());
         if ($converted === false || empty($list)) {
             return $list;
         } else {
@@ -52,19 +52,19 @@ trait DelayingTrait
         $inUse = $this->listDelayed();
         if (!empty($inUse)) {
             foreach ($inUse as $identity) {
-                $this->redis->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
+                $this->storage->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
             }
         }
     }
     
     public function purgeDelayed()
     {
-        $this->redis->delete($this->delayedKey());
+        $this->storage->delete($this->delayedKey());
     }
     
     protected function listExpired($expireTime): array
     {
-        return $this->redis->zSetExpiredItems($this->delayedKey(), $expireTime);
+        return $this->storage->zSetExpiredItems($this->delayedKey(), $expireTime);
     }
     
     protected function resumeExpired()
@@ -72,7 +72,7 @@ trait DelayingTrait
         $inUseExpired = $this->listExpired(Carbon::now()->timestamp);
         if (!empty($inUseExpired)) {
             foreach ($inUseExpired as $identity) {
-                $this->redis->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
+                $this->storage->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
             }
         }
     }

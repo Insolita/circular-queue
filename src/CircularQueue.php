@@ -27,13 +27,13 @@ class CircularQueue extends SimpleCircularQueue implements DelayingInterface
     public function pull(int $ttl = 0)
     {
         $this->beforePull();
-        $item = $this->redis->listPop($this->queueKey());
+        $item = $this->storage->listPop($this->queueKey());
         if (!$item) {
             return $this->emptyQueueBehavior->resolve($this);
         } else {
             if ($ttl > 0) {
                 $resumeTime = Carbon::now()->timestamp + $ttl;
-                $this->redis->zSetPush($this->delayedKey(), $resumeTime, $item);
+                $this->storage->zSetPush($this->delayedKey(), $resumeTime, $item);
             }
             return $this->converter->toPayload($item);
         }
