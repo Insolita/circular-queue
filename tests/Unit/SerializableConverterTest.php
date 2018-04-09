@@ -115,6 +115,7 @@ class SerializableConverterTest extends TestCase
         $serialized = serialize(['id' => 3, 'name' => 'baz']);
         $this->redis->shouldReceive('zSetExists')->withArgs(['test:Wait', $serialized])->andReturn(true);
         $this->redis->shouldReceive('moveFromZSetToList')->withArgs(['test:Queue', 'test:Wait', $serialized]);
+        $this->redis->shouldReceive('listItems')->withArgs(['test:Queue'])->andReturn([]);
         $this->queue->resume(['id' => 3, 'name' => 'baz']);
     }
     
@@ -123,6 +124,7 @@ class SerializableConverterTest extends TestCase
         $serialized = serialize(['id' => 3, 'name' => 'baz']);
         $this->redis->shouldReceive('zSetExists')->withArgs(['test:Wait', $serialized])->andReturn(false);
         $this->redis->shouldReceive('listPush')->withArgs(['test:Queue', [$serialized]]);
+        $this->redis->shouldReceive('listItems')->withArgs(['test:Queue'])->andReturn([]);
         $this->queue->resume(['id' => 3, 'name' => 'baz']);
     }
 }
