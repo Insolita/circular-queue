@@ -25,7 +25,7 @@ interface DelayingInterface
      * @param $payload
      * @param bool $force (if true, item will added in queue even if it already in queue)
      */
-    public function resume($payload, int $delay = 0, $force = false);
+    public function resume($payload, int $delay = 0, bool $force = false);
     
     /**
      * Return item to queue, after timestamp
