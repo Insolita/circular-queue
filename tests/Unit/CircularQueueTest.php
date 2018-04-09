@@ -114,6 +114,7 @@ class CircularQueueTest extends TestCase
     {
         $this->redis->shouldReceive('zSetExists')->withArgs(['test:Wait', 10])->andReturn(true);
         $this->redis->shouldReceive('moveFromZSetToList')->withArgs(['test:Queue', 'test:Wait', 10]);
+        $this->redis->shouldReceive('listItems')->withArgs(['test:Queue'])->andReturn([]);
         $this->redis->shouldNotReceive('listPush');
         $this->redis->shouldNotReceive('zSetPush');
         $this->queue->resume(10);
@@ -123,6 +124,7 @@ class CircularQueueTest extends TestCase
     {
         $this->redis->shouldReceive('zSetExists')->withArgs(['test:Wait', 10])->andReturn(false);
         $this->redis->shouldNotReceive('moveFromZSetToList');
+        $this->redis->shouldReceive('listItems')->withArgs(['test:Queue'])->andReturn([]);
         $this->redis->shouldReceive('listPush')->withArgs(['test:Queue', [10]]);
         $this->redis->shouldNotReceive('zSetPush');
         $this->queue->resume(10);
