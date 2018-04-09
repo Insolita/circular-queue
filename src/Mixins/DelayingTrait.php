@@ -6,6 +6,7 @@
 namespace insolita\cqueue\Mixins;
 
 use Carbon\Carbon;
+use function in_array;
 
 /**
  * @mixin \insolita\cqueue\CircularQueue
@@ -13,13 +14,13 @@ use Carbon\Carbon;
 trait DelayingTrait
 {
     
-    public function resume($payload, int $delay = 0)
+    public function resume($payload, int $delay = 0, bool $force = false)
     {
         $identity = $this->converter->toIdentity($payload);
         if ($delay === 0) {
             if ($this->storage->zSetExists($this->delayedKey(), $identity)) {
                 $this->storage->moveFromZSetToList($this->queueKey(), $this->delayedKey(), $identity);
-            } else {
+            }elseif ($force === true || !in_array($identity, $this->storage->listItems($this->queueKey()))){
                 $this->storage->listPush($this->queueKey(), [$identity]);
             }
         } else {

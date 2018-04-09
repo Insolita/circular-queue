@@ -119,6 +119,23 @@ class FunctionalPredisTest extends TestCase
         
         expect('item was resumed in queue', $this->queue->listQueued())->contains($one);
         expect('item not in delayed', $this->queue->listDelayed())->notContains($one);
+        
+    }
+    
+    public function testEnsureDoubleResumePrevented()
+    {
+        $this->queue->fill(['foo', 'bar', 'baz', 'one', 'two']);
+        $one = $this->queue->pull(10);
+        expect($this->queue->listQueued())->notContains($one);
+        expect($this->queue->listDelayed())->contains($one);
+        $this->queue->resume($one);
+        $this->queue->resume($one);
+        $this->queue->resume($one);
+        $this->queue->resume($one);
+        expect($this->queue->countQueued())->equals(5);
+        $this->queue->resume($one, 0 ,true);
+        $this->queue->resume($one, 0 ,true);
+        expect('resumed with force flag skip checking unique', $this->queue->countQueued())->equals(7);
     }
     
     public function testResumeNewItem()
