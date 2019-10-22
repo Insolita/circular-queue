@@ -10,9 +10,6 @@ use insolita\cqueue\Contracts\DelayingInterface;
 use insolita\cqueue\Contracts\EmptyQueueBehaviorInterface;
 use insolita\cqueue\Contracts\QueueInterface;
 
-/**
- *
- */
 class OnEmptyQueueResumeException implements EmptyQueueBehaviorInterface
 {
     

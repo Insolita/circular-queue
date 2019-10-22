@@ -8,9 +8,6 @@ namespace insolita\cqueue\Behaviors;
 use Exception;
 use insolita\cqueue\Contracts\EmptyQueueBehaviorInterface;
 
-/**
- *
- */
 class OnEmptyQueueException implements EmptyQueueBehaviorInterface
 {
     

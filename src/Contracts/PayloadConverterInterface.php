@@ -5,6 +5,7 @@
 
 namespace insolita\cqueue\Contracts;
 
+
 interface PayloadConverterInterface
 {
     /**

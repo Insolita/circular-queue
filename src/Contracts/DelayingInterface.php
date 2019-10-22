@@ -5,9 +5,7 @@
 
 namespace insolita\cqueue\Contracts;
 
-/**
- *
- */
+
 interface DelayingInterface
 {
     /**

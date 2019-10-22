@@ -5,8 +5,8 @@
 
 namespace insolita\cqueue\Storage;
 
-use function array_unshift;
 use insolita\cqueue\Contracts\StorageInterface;
+use Redis;
 
 class PhpRedisStorage implements StorageInterface
 {
@@ -15,7 +15,7 @@ class PhpRedisStorage implements StorageInterface
      */
     private $redis;
     
-    public function __construct(\Redis $client)
+    public function __construct(Redis $client)
     {
         $this->redis = $client;
     }
@@ -77,7 +77,7 @@ class PhpRedisStorage implements StorageInterface
     public function zSetExists($key, $identity): bool
     {
         $score = $this->redis->zScore($key, $identity);
-        return (!is_null($score) && $score !== false);
+        return ($score !== null && $score !== false);
     }
     
     public function moveFromZSetToList($listKey, $zSetKey, $item)

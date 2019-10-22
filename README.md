@@ -64,22 +64,27 @@ Useful for resource balancing, parsing
 
 ```php
    $q1 = new CircularQueue(
-                                 'firstQueue',
-                                  new SerializableConverter(),
-                                  new OnEmptyQueueException(),
-                                  new PhpRedisStorage(new \Redis())
-                            );
+           'firstQueue',
+            new SerializableConverter(),
+            new OnEmptyQueueException(),
+            new PhpRedisStorage(new \Redis())
+         );
    $manager = new Manager([$q1]);
    $manager->add(new CircularQueue(
-                           'secondQueue',
-                            new SerializableConverter(),
-                            new OnEmptyQueueException(),
-                            new PhpRedisStorage(new \Redis())
-                      ));
+           'secondQueue',
+            new SerializableConverter(),
+            new OnEmptyQueueException(),
+            new PhpRedisStorage(new \Redis())
+   ));
+   
+   $manager->has('secondQueue'); //true
+   $manager->has('fooQueue'); //false
+
 
    $manager->queue('firstQueue')->fill([...]);
    $manager->queue('secondQueue')->fill([...]);
    ...
    $manager->remove('firstQueue');
+   $manager->remove('secondQueue');
 
 ```

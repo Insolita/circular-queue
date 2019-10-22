@@ -7,10 +7,8 @@ namespace insolita\cqueue;
 
 use insolita\cqueue\Contracts\QueueInterface;
 use insolita\cqueue\Contracts\DelayingInterface;
+use InvalidArgumentException;
 
-/**
- *
- */
 class Manager
 {
     
@@ -46,7 +44,7 @@ class Manager
         if (isset($this->queues[$queueName])) {
             unset($this->queues[$queueName]);
         } else {
-            throw new \InvalidArgumentException('Queue ' . $queueName . ' not registered');
+            throw new InvalidArgumentException('Queue ' . $queueName . ' not registered');
         }
     }
     
@@ -65,8 +63,8 @@ class Manager
     {
         if (isset($this->queues[$queueName])) {
             return $this->queues[$queueName];
-        } else {
-            throw new \InvalidArgumentException('Queue ' . $queueName . ' not registered');
         }
+
+        throw new InvalidArgumentException('Queue ' . $queueName . ' not registered');
     }
 }

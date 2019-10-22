@@ -5,6 +5,7 @@
 
 namespace insolita\cqueue\Contracts;
 
+
 interface StorageInterface
 {
     public function delete($key);
