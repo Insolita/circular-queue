@@ -24,7 +24,7 @@ class StorageSameTest extends TestCase
      */
     private $phpRedisStorage;
     
-    public function setUp()
+    protected function setUp()
     {
         $predis = new Client([
             'host' => '127.0.0.1',

@@ -20,7 +20,7 @@ class FunctionalPredisTest extends TestCase
      */
     private $queue;
     
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $predis = new Client([

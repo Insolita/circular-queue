@@ -24,8 +24,12 @@
     } ,
     "autoload":    {
         "psr-4": {
-            "insolita\\cqueue\\tests\\": "tests/" ,
             "insolita\\cqueue\\":        "src/"
+        }
+    },
+    "autoload-dev":    {
+        "psr-4": {
+            "insolita\\cqueue\\tests\\": "tests/"
         }
     }
 }

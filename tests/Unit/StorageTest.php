@@ -15,28 +15,28 @@ use Redis;
 class StorageTest extends TestCase
 {
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-    
+
     /**
      * @var \Redis|\Mockery\MockInterface $phpRedis
      */
     private $phpRedis;
-    
+
     /**
      * @var Client|\Mockery\MockInterface $predis
      */
     private $predis;
-    
+
     /**
      * @var PhpRedisStorage
      */
     private $phpRedisStorage;
-    
+
     /**
      * @var PredisStorage
      */
     private $predisStorage;
-    
-    public function setUp()
+
+    protected function setUp()
     {
         parent::setUp();
         $this->phpRedis = Mockery::mock(Redis::class);
@@ -44,7 +44,7 @@ class StorageTest extends TestCase
         $this->predisStorage = new PredisStorage($this->predis);
         $this->phpRedisStorage = new PhpRedisStorage($this->phpRedis);
     }
-    
+
     public function testDelete()
     {
         $this->predis->shouldReceive('del')->withArgs([['key']]);
@@ -52,7 +52,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('del')->withArgs(['key']);
         $this->phpRedisStorage->delete('key');
     }
-    
+
     public function testListCount()
     {
         $this->predis->shouldReceive('llen')->withArgs(['key']);
@@ -60,7 +60,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('lLen')->withArgs(['key']);
         $this->phpRedisStorage->listCount('key');
     }
-    
+
     public function testListItems()
     {
         $this->predis->shouldReceive('lrange')->withArgs(['key', 0, -1])->andReturn([]);
@@ -68,7 +68,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('lrange')->withArgs(['key', 0, -1])->andReturn([]);
         $this->phpRedisStorage->listItems('key');
     }
-    
+
     public function testListPop()
     {
         $this->predis->shouldReceive('rpop')->withArgs(['key']);
@@ -76,7 +76,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('rPop')->withArgs(['key']);
         $this->phpRedisStorage->listPop('key');
     }
-    
+
     public function testListPush()
     {
         $this->predis->shouldReceive('lpush')->withArgs(['key', ['foo', 'bar']]);
@@ -85,7 +85,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('lPush')->withArgs(['key', 'bar']);
         $this->phpRedisStorage->listPush('key', ['foo', 'bar']);
     }
-    
+
     public function testZSetCount()
     {
         $this->predis->shouldReceive('zcard')->withArgs(['key']);
@@ -93,7 +93,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('zCard')->withArgs(['key']);
         $this->phpRedisStorage->zSetCount('key');
     }
-    
+
     public function testZSetItems()
     {
         $this->predis->shouldReceive('zrange')->withArgs(['key', 0, -1])->andReturn([]);
@@ -101,7 +101,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('zRange')->withArgs(['key', 0, -1])->andReturn([]);
         $this->phpRedisStorage->zSetItems('key');
     }
-    
+
     public function testZSetExpiredItems()
     {
         $time = time();
@@ -110,7 +110,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('zRevRangeByScore')->withArgs(['key', $time, '-inf'])->andReturn([]);
         $this->phpRedisStorage->zSetExpiredItems('key', $time);
     }
-    
+
     public function testZSetPush()
     {
         $this->predis->shouldReceive('zadd')->withArgs(['key', ['foo' => 100]]);
@@ -118,7 +118,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('zAdd')->withArgs(['key', 100, 'foo']);
         $this->phpRedisStorage->zSetPush('key', 100, 'foo');
     }
-    
+
     public function testZSetRem()
     {
         $this->predis->shouldReceive('zrem')->withArgs(['key', 'foo']);
@@ -126,7 +126,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('zRem')->withArgs(['key', 'foo']);
         $this->phpRedisStorage->zSetRem('key', 'foo');
     }
-    
+
     public function testZSetExists()
     {
         $this->predis->shouldReceive('zScore')->withArgs(['key', 'foo'])->andReturn(1);
@@ -154,7 +154,7 @@ class StorageTest extends TestCase
         $result = $this->phpRedisStorage->zSetExists('key', 'baz');
         expect($result)->false();
     }
-    
+
     public function testMoveFromZSetToListExisted()
     {
         $this->predis->shouldReceive('zrem')->withArgs(['zkey', 'foo'])->andReturn(1);
@@ -164,7 +164,7 @@ class StorageTest extends TestCase
         $this->phpRedis->shouldReceive('lPush')->withArgs(['key', 'foo']);
         $this->phpRedisStorage->moveFromZSetToList('key', 'zkey', 'foo');
     }
-    
+
     public function testMoveFromZSetToListAbsent()
     {
         $this->predis->shouldReceive('zrem')->withArgs(['zkey', 'foo'])->andReturn(0);
