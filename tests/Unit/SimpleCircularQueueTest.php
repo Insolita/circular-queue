@@ -25,7 +25,7 @@ class SimpleCircularQueueTest extends TestCase
      */
     private $redis;
     
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->redis = Mockery::mock(PhpRedisStorage::class);

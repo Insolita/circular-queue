@@ -2,6 +2,8 @@ language: php
 php:
   - 7.0
   - 7.1
+  - 7.2
+  - 7.3
 matrix:
    fast_finish: true
 
@@ -13,13 +15,10 @@ cache:
     - $HOME/.composer/cache
     - vendor
 
-before_install:
-  - sudo apt-get update -qq
 install:
   - phpenv config-rm xdebug.ini || echo "xdebug is not installed"
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - travis_retry composer self-update && composer --version
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - travis_retry composer install --prefer-dist --no-interaction
 
-script: phpunit -vvv
+script: vendor/bin/phpunit

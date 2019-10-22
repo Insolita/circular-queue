@@ -20,7 +20,7 @@ class FunctionalRedisTest extends TestCase
      */
     private $queue;
     
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $redis = new Redis();
